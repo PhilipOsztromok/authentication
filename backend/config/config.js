@@ -29,7 +29,7 @@ const config = {
     jwtExpiresIn: process.env.JWT_EXPIRES_IN
   },
 
-  client_url: process.env.CLIENT_URL 
+  client_url: process.env.CLIENT_URL || 'http://localhost:3000'
 }
 
 export default config;

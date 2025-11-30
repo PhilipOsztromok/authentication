@@ -1,5 +1,6 @@
 import { parsePhoneNumber } from libphonenumber-js
 import bcrypt from "bcryptjs";
+import dayjs from "dayjs";
 
 export default {
     parseTelNo: (phoneNumber)  => {
@@ -79,4 +80,10 @@ export default {
             throw error
         }
     },
+
+    generateResetPasswordExpiry: (minutes) => {
+        const time = dayjs().valueOf() + minutes * 60000;
+        return dayjs(time);
+    }
+   
 }

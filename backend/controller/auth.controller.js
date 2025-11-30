@@ -22,7 +22,7 @@ export default {
             if (existingUser) return http_errors(next, new Error(error_messages.AUTH.ALREADY_EXIST("User", emailAddress)));
 
             const {countryCode, isoCode, internationalNumber} = helper.parseTelNo(phoneNumber);
-            if (!countryCode || isoCode || internationalNumber) return http_errors(next, new Error(error_messages.AUTH.INVALID_PHONE_NUMBER), req, 422);
+            if (!countryCode || !isoCode || !internationalNumber) return http_errors(next, new Error(error_messages.AUTH.INVALID_PHONE_NUMBER), req, 422);
 
             const hashedPassword = helper.hash_password(password);
 
@@ -91,7 +91,7 @@ export default {
 
             const DOMAIN = helper.getDomainFromURL(config.server.url);
 
-            res.cookies("access_token", access_token, {
+            res.cookie("access_token", access_token, {
                 path: EApplicationEnvironment.DEVELOPMENT ? "v1" : "api/v1",
                 domain: DOMAIN,
                 sameSite: "strict",
@@ -118,12 +118,12 @@ export default {
                 }
                 const auth_header = req.headers.authorization;
                 if ( !access_token && auth_header ?. startsWith( "Bearer " )) {
-                    access_token = auth_header.subString(7);
+                    access_token = auth_header.substring(7);
                 }
 
                 const { userID } = helper.verifyToken(access_token, config.auth.jwtSecret);
 
-                const user = userModel.findById(userID);
+                const user = await userModel.findById(userID);
 
                 if (!user) {
                     return http_errors(next,new Error(error_messages.ERROR.NOT_FOUND("user")),req,404);
@@ -135,7 +135,7 @@ export default {
 
                 const DOMAIN = helper.getDomainFromURL(config.server.url);
 
-                res.cookies("access_token", access_token, {
+                res.clearCookie("access_token", access_token, {
                     path: EApplicationEnvironment.DEVELOPMENT ? "v1" : "api/v1",
                     domain: DOMAIN,
                     sameSite: "strict",
@@ -152,21 +152,49 @@ export default {
         forgot_password: async (req,res,next) => {
             try {
                 const email_address = req.body.emailAddress;
+                let expiryTime = 15;
 
                 if (!email_address) {
                     return http_errors(next,new Error(error_messages.COMMON.INVALID_PARAMETERS("Email address ")),req,400);
                 }
 
-                const user = userModel.findOne({emailAddress:email_address});
+                const user = await userModel.findOne({emailAddress:email_address});
                 
                 if (!user) {
                     return http_errors(next,new Error(error_messages.ERROR.NOT_FOUND("user")),req,404);
                 }
-                    
+
+                if (!user.accountConfirmation.status) 
+                    {
+                    return http_errors(next,new Error(error_messages.AUTH.ACCOUNT_NOT_CONFIRMED),req,400);
                 }
 
-            } catch (error) {
-                
+                const token = helper.generateID();
+
+                const expiry = helper.generateResetPasswordExpiry(expiryTime);
+
+                user.passwordReset.token = token;
+
+                user.passwordReset.expiry = expiry;
+
+                await user.save();
+
+                const resetURL = `${config.client_url}/app/passwordReset/${token}`;
+
+                const to = [email_address];
+
+                const subject = "Password Reset Email";
+
+                const text = `Please reset your password by clicking the link.  This link will expire in ${expiryTime} minutes!\n\nReset Link: ${resetURL}`;
+
+                emailService.sendEmail(to, subject, text).catch( (err)=> {
+                    logger.error(`Email service`, {meta:err});
+                    return http_responses(req,res,status_code=200,error_messages.SUCCESS);
+                });
+            }
+
+            catch (error) {
+                 return http_errors(next,new Error(error_messages.ERROR.NOT_FOUND("user")),req,500);   
             }
         }
 }

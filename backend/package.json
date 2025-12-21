@@ -18,6 +18,7 @@
     "express": "^5.2.1",
     "helmet": "^8.1.0",
     "libphonenumber": "^0.0.10",
+    "libphonenumber-js": "^1.12.33",
     "mongoose": "^9.0.1",
     "rate-limiter-flexible": "^9.0.1",
     "Router": "^2.1.0"

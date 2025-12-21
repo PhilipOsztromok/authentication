@@ -1,5 +1,5 @@
 import Joi, { object } from 'joi';
-import { EUserRole } from '../constants/application';
+import { EUserRole } from '../constants/application.js';
 import { Schema } from 'mongoose';
 
 export const signup_body = Joi.object({

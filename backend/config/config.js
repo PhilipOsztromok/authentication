@@ -1,4 +1,4 @@
-import dotenvFlow from 'dotenvFlow';
+import dotenvFlow from 'dotenv-flow';
 
 dotenvFlow.config();
 
@@ -20,8 +20,8 @@ const config = {
   },
   security: {
     corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    rate_limit_window_ms: parsetInt(process.env.RATE_LIMIT_WINDOW_MS),
-    rate_limit_max: parsetInt(process.env.RATE_LIMIT_MAX)
+    rate_limit_window_ms: parseInt(process.env.RATE_LIMIT_WINDOW_MS),
+    rate_limit_max: parseInt(process.env.RATE_LIMIT_MAX)
   },
 
   auth: {

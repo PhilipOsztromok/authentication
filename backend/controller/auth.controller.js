@@ -1,8 +1,8 @@
-import error_messages from "../constants/error_messages";
-import { signup_body, login_body, validateJoiSchema } from "../services/validation_services";
+import error_messages from "../constants/error_messages.js";
+import { signup_body, login_body, validateJoiSchema } from "../services/validation_services.js";
 import helper from "../utils/helper.js";
 import errorObject from "../utils/errorObject.js";
-import http_errors from "../utils/http_errors";
+import http_errors from "../utils/http_errors.js";
 import http_responses from "../utils/http_responses.js";
 import userModel from "../models/user.model.js";
 import { EUserRole } from "../constants/application.js";

@@ -1,4 +1,4 @@
-import { parsePhoneNumber } from libphonenumber-js
+import { parsePhoneNumber } from libphonenumber.js;
 import bcrypt from "bcryptjs";
 import dayjs from "dayjs";
 

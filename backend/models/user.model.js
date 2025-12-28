@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { EUserRole } from "../constants/application";
+import { EUserRole } from "../constants/application.js";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
         unique: true
     },
     phoneNumber: {
-        id: false,
+        _id: false,
         isoCode: {
             type: String,
             required: true

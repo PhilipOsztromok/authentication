@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-// import { config } from 'dotenv';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet'
 import config from './config/config.js';
@@ -41,7 +40,7 @@ app.get('/',(req,res)=>{
 })
 
 const onListening = () => {
-    console.log(`Server running at http://localhost:${config.PORT}`);
+    console.log(`Server running at http://localhost:${config.server.port}`);
 }
 
 databaseService.connect()

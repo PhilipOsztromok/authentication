@@ -1,4 +1,4 @@
-import error_messages from "../constants/error_messages";
+import error_messages from "../constants/error_messages.js";
 
 export default(error,req,status_code) => {
     const errorObject = {

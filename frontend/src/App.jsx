@@ -72,7 +72,7 @@ function App() {
 
   return (
     <>
-       <h1>helloe</h1>      
+       <h1>hello</h1>      
     </>
   )
 

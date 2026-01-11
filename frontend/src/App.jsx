@@ -1,6 +1,4 @@
 import { useContext,createContext, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
@@ -70,14 +68,49 @@ function App() {
     
   }
 
+ const [view, setView] = useState('login'); // login, register, forgotPassword, resetPassword
+  const [resetToken, setResetToken] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    if (token) {
+      setResetToken(token);
+      setView('resetPassword');
+    }
+  }, []);
+
   return (
-    <>
-       <h1>helloe</h1>      
-    </>
-  )
+    <AuthProvider>
+      <AuthContent view={view} setView={setView} resetToken={resetToken} />
+    </AuthProvider>
+  );
+};
+
+const AuthContent = ({ view, setView, resetToken }) => {
+  const { user, loading } = useAuth();
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-blue-50">
+        <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
+      </div>
+    );
+
+  if (user) return <Dashboard />;
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50">
+      {view === 'login' && <Login onSwitchToRegister={() => setView('register')} onSwitchToForgot={() => setView('forgotPassword')} />}
+      {view === 'register' && <Register onSwitchToLogin={() => setView('login')} />}
+      {view === 'forgotPassword' && <ForgotPassword onBack={() => setView('login')} />}
+      {view === 'resetPassword' && <ResetPassword token={resetToken} />}
+    </div>
+  );
+};
 
 
 
-}
+
 
 export default App

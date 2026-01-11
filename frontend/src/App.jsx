@@ -81,35 +81,11 @@ function App() {
   }, []);
 
   return (
-    <AuthProvider>
-      <AuthContent view={view} setView={setView} resetToken={resetToken} />
-    </AuthProvider>
-  );
-};
-
-const AuthContent = ({ view, setView, resetToken }) => {
-  const { user, loading } = useAuth();
-
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-blue-50">
-        <Loader2 className="w-12 h-12 animate-spin text-blue-600" />
-      </div>
-    );
-
-  if (user) return <Dashboard />;
-
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-blue-50">
-      {view === 'login' && <Login onSwitchToRegister={() => setView('register')} onSwitchToForgot={() => setView('forgotPassword')} />}
-      {view === 'register' && <Register onSwitchToLogin={() => setView('login')} />}
-      {view === 'forgotPassword' && <ForgotPassword onBack={() => setView('login')} />}
-      {view === 'resetPassword' && <ResetPassword token={resetToken} />}
-    </div>
-  );
-};
-
-
+    <>
+       <h1>hello</h1>      
+    </>
+  )
+}
 
 
 

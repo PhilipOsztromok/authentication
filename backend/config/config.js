@@ -3,14 +3,14 @@ import dotenvFlow from 'dotenv-flow';
 dotenvFlow.config();
 
 const config = {
-    server:{
-        port: process.env.PORT,
-        url: process.env.SERVER_URL
-    },
+  server: {
+    port: parseInt(process.env.PORT),
+    url: process.env.SERVER_URL
+  },
 
-    database_url: process.env.DATABASE_URL,
+  database_url: process.env.DATABASE_URL,
 
-    email: {
+  email: {
     service: process.env.EMAIL_SERVICE,
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT || '587', 10),
@@ -19,17 +19,17 @@ const config = {
     from: process.env.EMAIL_FROM,
   },
   security: {
-    corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:5173',
     rate_limit_window_ms: parseInt(process.env.RATE_LIMIT_WINDOW_MS),
     rate_limit_max: parseInt(process.env.RATE_LIMIT_MAX)
   },
 
   auth: {
     jwtSecret: process.env.JWT_SECRET,
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN
+    jwtExpiresIn: parseInt(process.env.JWT_EXPIRES_IN)
   },
 
-  client_url: process.env.CLIENT_URL || 'http://localhost:3000'
+  client_url: process.env.CLIENT_URL || 'http://localhost:5173'
 }
 
 export default config;

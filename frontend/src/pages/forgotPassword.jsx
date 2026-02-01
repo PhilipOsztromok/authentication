@@ -1,3 +1,10 @@
+import { useState } from "react";
+import Alert from "../components/alert"
+import Input from '../components/input'
+import Button from "../components/button"
+import { Mail } from 'lucide-react';
+import { authAPI } from "../api";
+
 const ForgotPassword = ({ onBack }) => {
   const [emailAddress, setEmailAddress] = useState('');
   const [loading, setLoading] = useState(false);
@@ -8,8 +15,8 @@ const ForgotPassword = ({ onBack }) => {
     setAlert(null);
 
     try {
-      const response = await authAPI.forgotPassword(emailAddress);
-      
+      const response = await authAPI.forgot_password(emailAddress);
+
       if (response.success) {
         setAlert({ type: 'success', message: 'Password reset link sent to your email!' });
         setEmailAddress('');
@@ -29,9 +36,9 @@ const ForgotPassword = ({ onBack }) => {
       <p className="text-gray-600 mb-6 text-center text-sm">
         Enter your email address and we'll send you a link to reset your password.
       </p>
-      
+
       {alert && <Alert type={alert.type} message={alert.message} />}
-      
+
       <div>
         <Input
           label="Email Address"
@@ -43,11 +50,11 @@ const ForgotPassword = ({ onBack }) => {
           placeholder="john@example.com"
           required
         />
-        
-        <Button loading={loading} onClick={handleSubmit}>
+
+        <Button type="submit" loading={loading} onClick={handleSubmit}>
           Send Reset Link
         </Button>
-        
+
         <Button variant="secondary" onClick={onBack} className="mt-3">
           Back to Login
         </Button>
@@ -55,3 +62,5 @@ const ForgotPassword = ({ onBack }) => {
     </div>
   );
 };
+
+export default ForgotPassword;

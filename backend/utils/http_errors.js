@@ -1,6 +1,6 @@
 import errorObject from "./errorObject.js";
 
 export default (next, error, req, status_code) => {
-  const errorObject = errorObject(error, req, status_code);
-  return next(errorObject);
+  const errorObj = errorObject(error, req, status_code);
+  return next(errorObj);
 };

@@ -1,92 +1,97 @@
-import { useContext,createContext, useState } from 'react'
-import './App.css'
+import { createContext, useContext, useState, useEffect } from 'react';
+import './App.css';
 
+// pages
+import Login from './pages/login.jsx';
+import Register from './pages/signup.jsx';
+import ForgotPassword from './pages/forgotPassword.jsx';
+import ResetPassword from './pages/ResetPassword.jsx';
+
+// ==================
+// AUTH CONTEXT
+// ==================
+const AuthContext = createContext(null);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error('useAuth must be used within AuthProvider');
+  return context;
+};
+
+// ==================
+// API
+// ==================
+import { authAPI } from './api';
+
+// ==================
+// PROVIDER
+// ==================
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  const login = async (email, password) => {
+    const response = await authAPI.login(email, password);
+    if (response.success) {
+      setUser(response.user);
+    }
+    return response;
+  };
+
+  const logout = async () => {
+    await authAPI.logout();
+    setUser(null);
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, login, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+// ==================
+// APP
+// ==================
 function App() {
-
-  const apiBaseURL = 'http://localhost:3000/api/v1';
-  const AuthContext = createContext(null);
-  
-  const authProvider = ( {children} ) => {
-    const [user, setUser] = useState(null);
-    return(
-      <AuthContext.Provider value={ {user} }>
-        {children}
-      </AuthContext.Provider>
-    )
-  }
-
-  const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) throw new Error("Use auth must be used within an AuthProvider!");
-    return context;
-  }
-
-  const authAPI = {
-    signup: async(data) => {
-      const response = await fetch(`${apiBaseURL}/signup`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(data)
-      })
-
-      return response.json();
-
-    },
-
-    login: async(data) => {
-      const response = await fetch(`${apiBaseURL}/login`, {
-        credentials:"include",
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify(data)
-      })
-
-      return response.json();
-
-    },
-
-    logout: async() => {
-      const response = await fetch(`${apiBaseURL}/logout`, {
-        credentials:"include",
-        method:"POST"
-      })
-
-      return response.json();
-
-    },
-
-    forgot_password: async(email_address) => {
-      const response = await fetch(`${apiBaseURL}/forgot_password`, {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify( {email_address} )
-      })
-
-      return response.json();
-
-    },
-    
-  }
-
- const [view, setView] = useState('login'); // login, register, forgotPassword, resetPassword
-  const [resetToken, setResetToken] = useState('');
+  const [view, setView] = useState('login');
+  const [resetToken, setResetToken] = useState(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token) {
-      setResetToken(token);
-      setView('resetPassword');
+    const path = window.location.pathname;
+    if (path.startsWith('/app/passwordReset/')) {
+      const token = path.split('/').pop();
+      if (token) {
+        setResetToken(token);
+        setView('resetPassword');
+      }
     }
   }, []);
 
   return (
-    <>
-       <h1>hello</h1>      
-    </>
-  )
+    <AuthProvider>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        {view === 'login' && (
+          <Login
+            onSwitchToRegister={() => setView('register')}
+            onSwitchToForgotPassword={() => setView('forgotPassword')}
+          />
+        )}
+
+        {view === 'register' && (
+          <Register onSwitchToLogin={() => setView('login')} />
+        )}
+
+        {view === 'forgotPassword' && (
+          <ForgotPassword onBack={() => setView('login')} />
+        )}
+
+        {view === 'resetPassword' && (
+          <ResetPassword token={resetToken} onDone={() => setView('login')} />
+        )}
+      </div>
+    </AuthProvider>
+  );
 }
 
+export default App;
 
-
-export default App

@@ -12,17 +12,21 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dayjs": "^1.11.19",
     "dotenv-flow": "^4.1.0",
     "express": "^5.2.1",
     "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.3",
     "libphonenumber": "^0.0.10",
     "libphonenumber-js": "^1.12.33",
     "mongoose": "^9.0.1",
+    "nodemailer": "^7.0.13",
     "rate-limiter-flexible": "^9.0.1",
-    "Router": "^2.1.0"
+    "Router": "^2.1.0",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "cross-env": "^10.1.0",

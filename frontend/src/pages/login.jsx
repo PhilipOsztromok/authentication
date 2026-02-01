@@ -1,4 +1,11 @@
-const Login = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
+ import { useState } from "react";
+ import Alert from "../components/alert"
+import Input from '../components/input'
+import Button from "../components/button"
+import { useAuth } from "../App.jsx";
+import { Mail, Eye, EyeOff, Lock } from 'lucide-react';
+
+ const Login = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
   const { login } = useAuth();
   const [formData, setFormData] = useState({
     emailAddress: '',
@@ -80,7 +87,7 @@ const Login = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
           </button>
         </div>
         
-        <Button loading={loading} onClick={handleSubmit}>
+        <Button type="submit" loading={loading} onClick={handleSubmit}>
           Sign In
         </Button>
       </div>
@@ -94,3 +101,5 @@ const Login = ({ onSwitchToRegister, onSwitchToForgotPassword }) => {
     </div>
   );
 };
+
+export default Login;

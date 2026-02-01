@@ -60,37 +60,38 @@ const userSchema = new mongoose.Schema({
             default: null
         }
     },
-    consent: { 
-        type: Boolean, 
-        required: true 
+    consent: {
+        type: Boolean,
+        required: true
     },
-    role: { type: String, 
-        enum: EUserRole, 
-        required: true, 
-        default: EUserRole.USER 
+    role: {
+        type: String,
+        enum: EUserRole,
+        required: true,
+        default: EUserRole.USER
     },
     isActive: {
-        type: Boolean, 
+        type: Boolean,
         default: false
     },
-    userLocation:{
+    userLocation: {
         lat: {
-            type: Number, 
+            type: Number,
             default: null,
-            required: true
+            // required: true
         },
         long: {
-            type: Number, 
+            type: Number,
             default: null,
-            required: true
+            // required: true
         }
     },
-    lastLogin: { 
+    lastLogin: {
         type: Date,
         default: null
     }
 
-},{ timestamps: true })
+}, { timestamps: true })
 
 userSchema.index({ isActive: 1 });
 userSchema.index({ role: 1 });

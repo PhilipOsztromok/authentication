@@ -1,3 +1,10 @@
+import { useState } from "react";
+import Alert from "../components/alert"
+import Input from '../components/input'
+import Button from "../components/button"
+import { Mail, Eye, EyeOff, Lock, User, Phone, MapPin } from 'lucide-react';
+import { authAPI } from "../api";
+
 const Register = ({ onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
     name: '',
@@ -5,6 +12,8 @@ const Register = ({ onSwitchToLogin }) => {
     phoneNumber: '',
     password: '',
     confirmPassword: '',
+    lat: '',
+    long: '',
     consent: false,
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -20,6 +29,23 @@ const Register = ({ onSwitchToLogin }) => {
     }));
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const handleGetLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        setFormData(prev => ({
+          ...prev,
+          lat: position.coords.latitude,
+          long: position.coords.longitude
+        }));
+      }, function (error) {
+        console.error("Error getting location:", error);
+        setErrors(prev => ({ ...prev, lat: 'Could not fetch location' }));
+      });
+    } else {
+      setErrors(prev => ({ ...prev, lat: 'Geolocation not supported' }));
     }
   };
 
@@ -46,7 +72,7 @@ const Register = ({ onSwitchToLogin }) => {
 
   const handleSubmit = async () => {
     const newErrors = validate();
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -56,9 +82,15 @@ const Register = ({ onSwitchToLogin }) => {
     setAlert(null);
 
     try {
-      const { confirmPassword, ...submitData } = formData;
+      const { confirmPassword, lat, long, ...rest } = formData;
+      const submitData = {
+        ...rest,
+        // Only include location if provided
+        userLocation: (lat && long) ? { lat: Number(lat), long: Number(long) } : undefined
+      };
+
       const response = await authAPI.signup(submitData);
-      
+
       if (response.success) {
         setAlert({ type: 'success', message: 'Registration successful! Please check your email to confirm your account.' });
         setTimeout(() => onSwitchToLogin(), 3000);
@@ -75,9 +107,9 @@ const Register = ({ onSwitchToLogin }) => {
   return (
     <div className="w-full max-w-md">
       <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Create Account</h2>
-      
+
       {alert && <Alert type={alert.type} message={alert.message} />}
-      
+
       <div>
         <Input
           label="Full Name"
@@ -88,7 +120,7 @@ const Register = ({ onSwitchToLogin }) => {
           error={errors.name}
           placeholder="John Doe"
         />
-        
+
         <Input
           label="Email Address"
           icon={Mail}
@@ -99,7 +131,7 @@ const Register = ({ onSwitchToLogin }) => {
           error={errors.emailAddress}
           placeholder="john@example.com"
         />
-        
+
         <Input
           label="Phone Number"
           icon={Phone}
@@ -109,7 +141,37 @@ const Register = ({ onSwitchToLogin }) => {
           error={errors.phoneNumber}
           placeholder="1234567890"
         />
-      
+
+        <div className="flex gap-2 mb-4">
+          <div className="flex-1">
+            <Input
+              label="Latitude"
+              icon={MapPin}
+              name="lat"
+              value={formData.lat}
+              onChange={handleChange}
+              error={errors.lat}
+              placeholder="0.00"
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Longitude"
+              icon={MapPin}
+              name="long"
+              value={formData.long}
+              onChange={handleChange}
+              error={errors.long}
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+        <div className="mb-4">
+          <button type="button" onClick={handleGetLocation} className="text-sm text-blue-600 underline">
+            Get My Current Location
+          </button>
+        </div>
+
         <div className="relative mb-4">
           <Input
             label="Password"
@@ -129,7 +191,7 @@ const Register = ({ onSwitchToLogin }) => {
             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
           </button>
         </div>
-        
+
         <Input
           label="Confirm Password"
           icon={Lock}
@@ -140,7 +202,7 @@ const Register = ({ onSwitchToLogin }) => {
           error={errors.confirmPassword}
           placeholder="••••••••"
         />
-        
+
         <div className="mb-4">
           <label className="flex items-center gap-2 cursor-pointer">
             <input
@@ -156,12 +218,12 @@ const Register = ({ onSwitchToLogin }) => {
           </label>
           {errors.consent && <p className="mt-1 text-sm text-red-600">{errors.consent}</p>}
         </div>
-        
-        <Button loading={loading} onClick={handleSubmit}>
+
+        <Button type="submit" loading={loading} onClick={handleSubmit}>
           Create Account
         </Button>
       </div>
-      
+
       <p className="mt-4 text-center text-sm text-gray-600">
         Already have an account?{' '}
         <button onClick={onSwitchToLogin} className="text-blue-600 hover:underline font-medium">
@@ -171,4 +233,5 @@ const Register = ({ onSwitchToLogin }) => {
     </div>
   );
 };
-	
+
+export default Register;
